@@ -1,6 +1,6 @@
 {
   "name": "unicode-text-obfuscator", 
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Tiny utility to obfuscate and deobfuscate text by replacing characters with Unicode lookalikes.",
   "main": "index.js",
   "bin": {
