@@ -1,173 +1,223 @@
-# text-obfuscator-simple
+# unicode-text-obfuscator
 
-Tiny, dependency-free utility to **obfuscate** and **deobfuscate** text by replacing ASCII characters with visually similar Unicode lookalikes (Cyrillic, Greek, fullwidth, etc.). Useful for demo data, playful text effects, generating visually distinct IDs, or making text look “weird” while still readable.
+![npm](https://img.shields.io/npm/v/unicode-text-obfuscator?color=brightgreen)
+![license](https://img.shields.io/npm/l/unicode-text-obfuscator)
+![CI](https://img.shields.io/github/actions/workflow/status/lemonade-21/unicode-text-obfuscator/publish.yml?branch=main)
 
----
-
-## Features
-- Fast, zero-dependency functions: `obfuscate()` and `deobfuscate()`.
-- CLI tool for quick terminal usage.
-- Options to control how many characters are obfuscated and whether to preserve digits.
-- Designed small and safe for publishing to npm.
+Tiny, zero-dependency utility to **obfuscate** and **deobfuscate** text by replacing ASCII characters with visually similar Unicode lookalikes (Cyrillic, Greek, fullwidth, etc.). Useful for demo data, playful text effects, or making text look “weird” while still readable.
 
 ---
 
-## Install
+## Table of Contents
+- [Overview](#overview)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [API Reference](#api-reference)
+  - [`obfuscate(text, options)`](#obfuscatetext-options)
+  - [`deobfuscate(text)`](#deobfuscate-text)
+- [CLI Reference](#cli-reference)
+- [Advanced Examples](#advanced-examples)
+- [Edge Cases & Limitations](#edge-cases--limitations)
+- [Performance](#performance)
+- [Security & Privacy](#security--privacy)
+- [Troubleshooting & FAQ](#troubleshooting--faq)
+- [Tests & Development](#tests--development)
+- [Releasing & Versioning](#releasing--versioning)
+- [TypeScript Definitions](#typescript-definitions)
+- [Contribution Guide](#contribution-guide)
+- [Changelog Guidance](#changelog-guidance)
+- [License](#license)
 
-Install locally for a project:
+---
+
+## Overview
+
+**What it does**  
+This package replaces ASCII characters in text with visually similar Unicode lookalikes, and provides a best-effort `deobfuscate` function to map them back.
+
+**Use cases**
+- Demo/test data
+- Playful UI effects
+- Generate visually distinct IDs or names
+
+> ⚠️ **Not for security/encryption purposes.**
+
+---
+
+## Installation
 
 ```bash
-npm install text-obfuscator-simple
-```
-
-Install globally:
-
-```bash
-npm install -g text-obfuscator-simple
+npm install unicode-text-obfuscator       # Local project
+npm install -g unicode-text-obfuscator    # Global CLI
+npm install github:lemonade-21/unicode-text-obfuscator  # Direct from GitHub
 ```
 
 ---
 
-## Usage (JS)
+## Quick Start
 
 ```js
-// CommonJS
-const { obfuscate, deobfuscate } = require('text-obfuscator-simple');
+const { obfuscate, deobfuscate } = require('unicode-text-obfuscator');
 
-// Obfuscate everything possible
-console.log(obfuscate('Hello world!'));
-
-// Obfuscate ~50% of eligible characters
-console.log(obfuscate('Hello world!', { fraction: 0.5 }));
-
-// Preserve digits while obfuscating other characters
-console.log(obfuscate('User ID: 1234', { preserveDigits: true }));
-
-// Deobfuscate back to ASCII where mapping exists
-const ob = obfuscate('Hello world!');
+const original = 'Hello world 123';
+const ob = obfuscate(original);
 console.log('ob:', ob);
-console.log('de:', deobfuscate(ob));
+
+console.log('deobfuscated:', deobfuscate(ob));
+
+console.log(obfuscate(original, { fraction: 0.5 }));
+console.log(obfuscate(original, { preserveDigits: true }));
 ```
 
-If you are using ES modules, import like:
+ES module import:
 
 ```js
-import { obfuscate, deobfuscate } from 'text-obfuscator-simple';
+import { obfuscate, deobfuscate } from 'unicode-text-obfuscator';
 ```
 
 ---
 
-## API
+## API Reference
 
 ### `obfuscate(text, options)`
 
-- `text` — `string` (or value convertible to string). Required.
-- `options` — `object` (optional):
-  - `fraction` — `number` between `0` and `1`. Fraction of eligible characters to replace. Default: `1`.
-  - `preserveDigits` — `boolean`. If `true`, digits are not obfuscated. Default: `false`.
+- **text** — `string | any`  
+- **options** — `{ fraction?: number, preserveDigits?: boolean }`  
+- **Returns** — `string`  
 
-Returns obfuscated `string`.
+```js
+obfuscate('Hello world', { fraction: 0.5, preserveDigits: true });
+```
 
 ### `deobfuscate(text)`
 
-- `text` — `string`. Required.
+- **text** — `string | any`  
+- **Returns** — best-effort ASCII string  
 
-Returns a best-effort ASCII approximation by mapping known lookalike Unicode characters back to ASCII. Characters without mapping are left unchanged.
+```js
+deobfuscate('Hеllo wσrld');
+```
 
 ---
 
-## CLI
-
-After global install (or via `npm link` during development), run:
+## CLI Reference
 
 ```bash
-# Obfuscate
+text-obfuscator "Hello world" [--fraction=0.5] [--preserve-digits] [--deobfuscate]
+```
+
+**Examples**
+
+```bash
 text-obfuscator "Hello world"
-
-# Obfuscate with a fraction (0..1)
-text-obfuscator "Hello world" --fraction=0.5
-
-# Preserve digits
+text-obfuscator "Hello world" --fraction=0.4
 text-obfuscator "User 123" --preserve-digits
-
-# Deobfuscate
 text-obfuscator "Hеllo wσrld" --deobfuscate
 ```
 
 ---
 
-## Examples
+## Advanced Examples
+
+- Partial obfuscation: `fraction: 0.5`  
+- Preserve digits: `preserveDigits: true`  
+- Obfuscating filenames or slugs
+- Deterministic obfuscation via custom random seed (advanced)
+
+---
+
+## Edge Cases & Limitations
+
+- Font-dependent rendering  
+- Not all characters round-trip perfectly  
+- Surrogate pairs/emoji not modified  
+- Obfuscated text differs at byte level  
+
+---
+
+## Performance
+
+- `O(n)` in string length  
+- Fast for typical CLI or small UI use  
+- For large text, process by line/chunk  
+
+---
+
+## Security & Privacy
+
+- **Not encryption**: treat as plaintext  
+- Offline, zero-dependency, safe  
+- Do not use to store secrets  
+
+---
+
+## Troubleshooting & FAQ
+
+- Deobfuscation may not fully restore text due to mapping limitations  
+- Fonts may render some lookalikes identically  
+- Deterministic output requires custom random seed  
+
+---
+
+## Tests & Development
 
 ```bash
-# Node inline
-node -e "console.log(require('./index').obfuscate('Hello world'))"
+node test.js        # smoke test
+npm link            # test CLI locally
+```
 
-# Deobfuscate inline
-node -e "console.log(require('./index').deobfuscate('Неⅼłɵ ｗσŗłđ'))"
+Add Jest or Node asserts for more robust testing.
+
+---
+
+## Releasing & Versioning
+
+**Semantic versioning:** patch.minor.major  
+
+```bash
+npm version patch
+git push --follow-tags
+npm publish
+```
+
+**GitHub Actions example:** auto-publish on `v*.*.*` tags using NPM_TOKEN.
+
+---
+
+## TypeScript Definitions
+
+```ts
+export interface ObfuscateOptions {
+  fraction?: number;
+  preserveDigits?: boolean;
+}
+export function obfuscate(text: string | any, options?: ObfuscateOptions): string;
+export function deobfuscate(text: string | any): string;
 ```
 
 ---
 
-## Development & Testing
+## Contribution Guide
 
-Quick local test:
+1. Fork → branch → code → PR  
+2. Add tests and update docs  
+3. Keep dependency-free  
+4. Add JSDoc for new functions  
 
-```bash
-# run smoke test
-node test.js
+---
 
-# try CLI locally
-npm link
-text-obfuscator "Hello world" --fraction=0.6
+## Changelog Guidance
+
+```md
+## [1.0.3] - 2025-10-03
+### Added
+- `preserveDigits` option
+### Fixed
+- Reverse mapping for Cyrillic 'е'
 ```
-
-When ready to publish:
-1. Ensure `package.json.name` is unique on npm.
-2. Bump version in `package.json` (semantic versioning).
-3. Login to npm if needed: `npm login`.
-4. Publish: `npm publish`  
-   - If your package is scoped (e.g. `@yourname/package`) on first publish use:  
-     `npm publish --access public`
-
----
-
-## Packaging notes
-
-- Keep `node_modules/` out of the repo (`.gitignore`).
-- Keep development files (e.g., `test.js`, coverage) out of the published package via `.npmignore` if you want a smaller package:
-  ```text
-  test.js
-  coverage/
-  ```
-- Provide `README.md` and `LICENSE` at package root so they are visible on npm and GitHub.
-
----
-
-## Security & Limitations
-
-- This is a visual obfuscation only — **not** encryption. Do **not** use this to protect secrets or sensitive data.
-- Some Unicode lookalikes may not round-trip (i.e., deobfuscation may not perfectly restore every character).
-- Rendering depends on fonts; certain consoles or fonts might display characters differently.
-
----
-
-## Contributing
-
-Contributions are welcome! Suggested improvements:
-- Add TypeScript type definitions (`index.d.ts`).
-- Expand the lookalike mappings and make them configurable.
-- Add unit tests (Jest/mocha) for robust mapping coverage.
-
-If you open issues or PRs, include clear examples and the Node version you use.
-
----
-
-## Changelog
-
-Keep a `CHANGELOG.md` in repo for meaningful releases. For initial publish, start with `1.0.0` and note the first stable API.
 
 ---
 
 ## License
 
-This project is released under the MIT License — see `LICENSE` file for details.
+MIT License — see [LICENSE](LICENSE)
