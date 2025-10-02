@@ -1,0 +1,21 @@
+{
+  "name": "unicode-text-obfuscator", 
+  "version": "1.0.0",
+  "description": "Tiny utility to obfuscate and deobfuscate text by replacing characters with Unicode lookalikes.",
+  "main": "index.js",
+  "bin": {
+    "text-obfuscator": "./cli.js"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "obfuscate",
+    "unicode",
+    "text",
+    "cli",
+    "obfuscator"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
