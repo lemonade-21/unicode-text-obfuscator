@@ -20,7 +20,7 @@ Install locally for a project:
 npm install text-obfuscator-simple
 ```
 
-Install globally (if you want to use the CLI anywhere):
+Install globally:
 
 ```bash
 npm install -g text-obfuscator-simple
